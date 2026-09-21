@@ -25,16 +25,17 @@ if ( ! defined( 'ABSPATH' ) ) {
 define( 'SLIDEKIT_VERSION', '0.1.0' );
 define( 'SLIDEKIT_DIR', plugin_dir_path( __FILE__ ) );
 
-require_once SLIDEKIT_DIR . 'lib/plugin-update-checker/plugin-update-checker.php';
+// Update checks only happen in the admin and on cron; skip the front end.
+if ( is_admin() || wp_doing_cron() ) {
+	require_once SLIDEKIT_DIR . 'lib/plugin-update-checker/plugin-update-checker.php';
 
-use YahnisElsts\PluginUpdateChecker\v5\PucFactory;
-
-$slidekit_update_checker = PucFactory::buildUpdateChecker(
-	'https://github.com/philhoyt/SlideKit/',
-	__FILE__,
-	'slidekit'
-);
-$slidekit_update_checker->getVcsApi()->enableReleaseAssets();
+	$slidekit_update_checker = \YahnisElsts\PluginUpdateChecker\v5\PucFactory::buildUpdateChecker(
+		'https://github.com/philhoyt/SlideKit/',
+		__FILE__,
+		'slidekit'
+	);
+	$slidekit_update_checker->getVcsApi()->enableReleaseAssets();
+}
 
 /**
  * Registers the Slider and Slide blocks from the build manifest.
