@@ -50,8 +50,12 @@
 	padding-left: var(--slidekit-gap);
 }
 
-/* Fade: full-width slides, no gap. The plugin stacks and cross-fades them. */
-.slidekit--fade {
+/*
+ * Fade: full-width slides, no gap. The plugin stacks and cross-fades them.
+ * Two classes so this beats the per-breakpoint rules PHP appends after this
+ * stylesheet, whatever slides-per-view the block saved.
+ */
+.wp-block-slidekit-slider.slidekit--fade {
 	--slidekit-basis: 100%;
 	--slidekit-gap: 0px;
 }
