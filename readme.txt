@@ -22,6 +22,8 @@ The Slider block controls:
 * Previous and next arrows.
 * Pagination as dots, a fraction such as 2 / 5, or a progress bar.
 
+In the editor the Slider shows one slide at a time, with Previous, Next, a slide count and an Add slide button underneath.
+
 Autoplay shows a pause button, pauses on hover, on focus and when the slider scrolls out of view, and is skipped for visitors who prefer reduced motion.
 
 The front end is built on Embla Carousel and loads about 10 KB of JavaScript, gzipped, only on pages that contain a slider. The saved markup contains no library class names, and arrows, dots and the progress bar are plain HTML that theme CSS can restyle through `--slidekit-*` custom properties.
