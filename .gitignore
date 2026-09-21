@@ -6,3 +6,4 @@ vendor/
 .claude/settings.local.json
 plans/
 artifacts/
+.phpunit.result.cache

@@ -21,4 +21,4 @@ Slider and Slide blocks for WordPress, built on Embla Carousel 8. Extracted from
 
 ## Verify
 
-`npm run build && npm run lint:js && npm run lint:css && npm run lint:php`, then `npm run env:start`, insert a Slider, reload, confirm attributes round-trip and the front end has no console errors.
+`npm run build && npm run lint:js && npm run lint:css && npm run lint:php && npm run test:unit`, then `npm run env:start && npm run test:e2e && npm run test:php` (that order: PHPUnit reinstalls the tests site; `npx wp-env reset tests` restores it). Then insert a Slider, reload, confirm attributes round-trip and the front end has no console errors.

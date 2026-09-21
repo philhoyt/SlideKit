@@ -63,9 +63,14 @@ npm run build      # production build
 npm run lint:js
 npm run lint:css
 npm run lint:php
+npm run test:unit  # Jest, src/**/*.test.js
 npm run env:start  # local WordPress via wp-env, plugin pre-installed
+npm run test:e2e   # Playwright against the wp-env tests site
+npm run test:php   # PHPUnit inside the wp-env tests container
 npm run plugin-zip
 ```
+
+`test:php` reinstalls WordPress in the tests site, which leaves it with no active theme or plugin. Run `npx wp-env reset tests` afterwards before `test:e2e`, or run the end-to-end suite first as CI does.
 
 Block sources live in `src/slider` and `src/slide`. The front-end behaviour is `src/slider/view.js`. Values shared by the editor and the saved markup are in `src/slider/shared.js`.
 

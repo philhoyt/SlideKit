@@ -60,3 +60,58 @@ jobs:
 
       - name: Build
         run: npm run build
+
+      - name: Unit tests
+        run: npm run test:unit
+
+  test:
+    name: PHPUnit and end-to-end
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Set up Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.1'
+          tools: composer
+          coverage: none
+
+      - name: Install JS dependencies
+        run: npm ci
+
+      - name: Install PHP dependencies
+        run: composer install --no-interaction --prefer-dist
+
+      - name: Build
+        run: npm run build
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: Start wp-env
+        run: npm run env:start
+
+      # End-to-end first: the PHPUnit run reinstalls WordPress in the tests
+      # site, which leaves it without an active theme or plugin.
+      - name: End-to-end tests
+        run: npm run test:e2e
+
+      - name: PHPUnit
+        run: npm run test:php
+
+      - name: Upload Playwright artifacts
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: playwright-artifacts
+          path: artifacts/
+          if-no-files-found: ignore

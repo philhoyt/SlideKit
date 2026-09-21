@@ -3,6 +3,7 @@
 	<description>WordPress Coding Standards for the SlideKit plugin.</description>
 
 	<file>slidekit.php</file>
+	<file>tests/phpunit</file>
 
 	<arg name="basepath" value="."/>
 	<arg name="colors"/>
