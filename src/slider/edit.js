@@ -106,8 +106,12 @@ export default function Edit( { clientId, attributes, setAttributes } ) {
 		}
 	}, [ selectedSlideIndex ] );
 
+	// activeSlide can point past the end after a deletion; this is the slide
+	// actually shown, and what every control reasons about.
 	const displayIndex =
 		slideCount > 0 ? Math.min( activeSlide, slideCount - 1 ) : 0;
+	const canGoPrev = displayIndex > 0;
+	const canGoNext = displayIndex < slideCount - 1;
 
 	const goTo = ( index ) => {
 		const clamped = Math.max( 0, Math.min( slideCount - 1, index ) );
@@ -154,8 +158,8 @@ export default function Edit( { clientId, attributes, setAttributes } ) {
 					<ToolbarButton
 						icon="arrow-left-alt2"
 						label={ __( 'Previous slide', 'slidekit' ) }
-						onClick={ () => goTo( activeSlide - 1 ) }
-						disabled={ activeSlide === 0 || slideCount === 0 }
+						onClick={ () => goTo( displayIndex - 1 ) }
+						disabled={ ! canGoPrev }
 					/>
 					<span className="slidekit-toolbar__counter">
 						{ slideCount > 0
@@ -170,10 +174,8 @@ export default function Edit( { clientId, attributes, setAttributes } ) {
 					<ToolbarButton
 						icon="arrow-right-alt2"
 						label={ __( 'Next slide', 'slidekit' ) }
-						onClick={ () => goTo( activeSlide + 1 ) }
-						disabled={
-							activeSlide >= slideCount - 1 || slideCount === 0
-						}
+						onClick={ () => goTo( displayIndex + 1 ) }
+						disabled={ ! canGoNext }
 					/>
 				</ToolbarGroup>
 			</BlockControls>
