@@ -22,11 +22,11 @@ The Slider block controls:
 * Previous and next arrows.
 * Pagination as dots, a fraction such as 2 / 5, or a progress bar.
 
-Autoplay pauses on hover, on focus, when the slider scrolls out of view, and is skipped for visitors who prefer reduced motion.
+Autoplay shows a pause button, pauses on hover, on focus and when the slider scrolls out of view, and is skipped for visitors who prefer reduced motion.
 
-The front end is built on Embla Carousel and loads about 9 KB of JavaScript, gzipped, only on pages that contain a slider. The saved markup contains no library class names, and arrows, dots and the progress bar are plain HTML that theme CSS can restyle through `--slidekit-*` custom properties.
+The front end is built on Embla Carousel and loads about 10 KB of JavaScript, gzipped, only on pages that contain a slider. The saved markup contains no library class names, and arrows, dots and the progress bar are plain HTML that theme CSS can restyle through `--slidekit-*` custom properties.
 
-**Accessibility.** The slider viewport is a labelled region with keyboard arrow navigation. Each slide is announced as "3 / 5" or with the label you give it. Slide changes are announced through a polite live region.
+**Accessibility.** The slider viewport is a labelled region with keyboard arrow navigation. Each slide is announced as "3 / 5" or with the label you give it. Slide changes are announced through a polite live region. Autoplay has a stop and start button. All labels follow the site language.
 
 **For developers.** Each slider dispatches `slidekit:init` with the Embla instance in `event.detail.embla`. Slides dispatch `slidekit:slide:active` and `slidekit:slide:leaving` as the selection changes. All events bubble.
 
@@ -51,7 +51,7 @@ A cross-fade stacks slides on top of each other, so there is only ever one visib
 
 = Does it load on every page? =
 
-No. The script and stylesheet load only where a Slider block is present.
+The script loads only where a Slider block is present. On block themes the stylesheet does too; classic themes load the stylesheets of every registered block on every page, which is how WordPress handles block styles there.
 
 == Changelog ==
 

@@ -15,14 +15,14 @@ A Slide is a container: put an image, a cover, a group, or a query loop inside i
 
 ## Front end
 
-- About 9 KB of JavaScript gzipped, loaded only on pages with a slider.
+- About 10 KB of JavaScript gzipped, loaded only on pages with a slider. Stylesheets are page-scoped on block themes; classic themes load every registered block's styles on every page.
 - No library class names in saved markup. Arrows, dots, fraction and progress bar are plain HTML rendered by the plugin.
-- Themes restyle controls through custom properties on `.wp-block-slidekit-slider`: `--slidekit-arrow-size`, `--slidekit-arrow-color`, `--slidekit-arrow-background`, `--slidekit-dot-size`, `--slidekit-dot-color`, `--slidekit-progress-height`, `--slidekit-progress-color`, `--slidekit-progress-track`.
-- Autoplay pauses on hover, focus and off-screen, and is disabled under `prefers-reduced-motion`.
+- Themes restyle controls through custom properties on `.wp-block-slidekit-slider`: `--slidekit-arrow-size`, `--slidekit-arrow-color`, `--slidekit-arrow-background`, `--slidekit-dot-size`, `--slidekit-dot-color`, `--slidekit-progress-height`, `--slidekit-progress-color`, `--slidekit-progress-track`, `--slidekit-autoplay-size`.
+- Autoplay renders a stop / start button, pauses on hover, focus and off-screen, and is disabled under `prefers-reduced-motion`.
 
 ### Accessibility
 
-The viewport is `role="region"` with `aria-roledescription="carousel"` and an optional label from the block sidebar. It is focusable and responds to the left and right arrow keys. Slides are `role="group"` with a "3 / 5" label or a custom one. A polite live region announces the current slide after each change.
+The viewport is `role="region"` with `aria-roledescription="carousel"` and an optional label from the block sidebar. It is focusable and responds to the left and right arrow keys. Slides are `role="group"` with a "3 / 5" label or a custom one. A polite live region announces the current position after each change. Arrow, dot and autoplay labels are translated through `wp.i18n`.
 
 ### Events
 
