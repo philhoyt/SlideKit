@@ -153,13 +153,16 @@ function initSlider( root ) {
 	let fraction = null;
 	let progressBar = null;
 
+	// Dots, the fraction and the live region count scroll positions, which is
+	// fewer than the slide count when several slides fit in view.
 	function buildDots() {
 		pagination.innerHTML = '';
-		dots = embla.scrollSnapList().map( ( _, i ) => {
+		const snaps = embla.scrollSnapList();
+		dots = snaps.map( ( _, i ) => {
 			const dot = document.createElement( 'button' );
 			dot.type = 'button';
 			dot.className = 'slidekit__dot';
-			dot.setAttribute( 'aria-label', `${ i + 1 } / ${ total }` );
+			dot.setAttribute( 'aria-label', `${ i + 1 } / ${ snaps.length }` );
 			dot.addEventListener( 'click', () => embla.scrollTo( i ) );
 			pagination.appendChild( dot );
 			return dot;
@@ -208,7 +211,9 @@ function initSlider( root ) {
 
 	function announce() {
 		if ( live ) {
-			live.textContent = `${ embla.selectedScrollSnap() + 1 } / ${ total }`;
+			live.textContent = `${ embla.selectedScrollSnap() + 1 } / ${
+				embla.scrollSnapList().length
+			}`;
 		}
 	}
 
