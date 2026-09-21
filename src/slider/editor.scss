@@ -28,10 +28,37 @@
 }
 
 // The appender wrapper is absolutely positioned by core; lay it out in flow.
+// It holds the navigation bar, shown only while this slider or one of its
+// slides is selected, like core's own appender toggle.
 .slidekit--editor > .slidekit__container > .block-list-appender {
 	position: static;
-	display: flex;
+	display: none;
 	justify-content: center;
 	width: auto;
 	margin-top: 16px;
+}
+
+.slidekit--editor.is-selected > .slidekit__container > .block-list-appender,
+.slidekit--editor.has-child-selected > .slidekit__container > .block-list-appender {
+	display: flex;
+}
+
+.slidekit-editor-nav {
+	display: flex;
+	align-items: center;
+	gap: 4px;
+	flex-wrap: wrap;
+	justify-content: center;
+}
+
+.slidekit-editor-nav__count {
+	min-width: 3.5em;
+	padding: 0 4px;
+	font-size: 13px;
+	text-align: center;
+	font-variant-numeric: tabular-nums;
+}
+
+.slidekit-editor-nav .slidekit-add-slide {
+	margin-inline-start: 8px;
 }
