@@ -1,5 +1,7 @@
 # SlideKit
 
+[![CI](https://github.com/philhoyt/SlideKit/actions/workflows/ci.yml/badge.svg)](https://github.com/philhoyt/SlideKit/actions/workflows/ci.yml)
+
 Slider and Slide blocks for the WordPress block editor, built on [Embla Carousel](https://www.embla-carousel.com/).
 
 A Slide is a container: put an image, a cover, a group, or a query loop inside it. The Slider block sets slides per view and gap per breakpoint, slide or fade transition, loop, autoplay, arrows, and dots, fraction or progress-bar pagination.
