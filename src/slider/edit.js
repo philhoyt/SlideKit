@@ -1,14 +1,15 @@
 import { useState, useEffect } from '@wordpress/element';
 import { useSelect, useDispatch } from '@wordpress/data';
+import { createBlock } from '@wordpress/blocks';
 import {
 	BlockControls,
 	InspectorControls,
-	InnerBlocks,
 	useBlockProps,
 	useInnerBlocksProps,
 	useSettings,
 } from '@wordpress/block-editor';
 import {
+	Button,
 	PanelBody,
 	RangeControl,
 	SelectControl,
@@ -87,7 +88,11 @@ export default function Edit( { clientId, attributes, setAttributes } ) {
 	);
 	const slideCount = innerBlocks.length;
 
-	const { selectBlock } = useDispatch( 'core/block-editor' );
+	const { selectBlock, insertBlock } = useDispatch( 'core/block-editor' );
+
+	const addSlide = () => {
+		insertBlock( createBlock( 'slidekit/slide' ), slideCount, clientId );
+	};
 
 	// Follow the selection: selecting a slide (or anything inside it) shows it.
 	useEffect( () => {
@@ -122,15 +127,27 @@ export default function Edit( { clientId, attributes, setAttributes } ) {
 		{
 			allowedBlocks: [ 'slidekit/slide' ],
 			template: [ [ 'slidekit/slide' ] ],
-			renderAppender: InnerBlocks.ButtonBlockAppender,
+			// A labelled button below the active slide, instead of the default
+			// corner "+" that overlaps the slide's own appender.
+			renderAppender: () => (
+				<Button
+					className="slidekit-add-slide"
+					variant="secondary"
+					onClick={ addSlide }
+					__next40pxDefaultSize
+				>
+					{ __( 'Add slide', 'slidekit' ) }
+				</Button>
+			),
 		}
 	);
 
 	return (
 		<>
+			{ /* Hide every slide except the active one; leave the appender alone. */ }
 			<style>{ `.slidekit--${ clientId } > .slidekit__container > *:not(:nth-child(${
 				displayIndex + 1
-			})) { display: none; }` }</style>
+			})):not(.block-list-appender) { display: none; }` }</style>
 
 			<BlockControls>
 				<ToolbarGroup>

@@ -26,3 +26,12 @@
 	white-space: nowrap;
 	font-variant-numeric: tabular-nums;
 }
+
+// The appender wrapper is absolutely positioned by core; lay it out in flow.
+.slidekit--editor > .slidekit__container > .block-list-appender {
+	position: static;
+	display: flex;
+	justify-content: center;
+	width: auto;
+	margin-top: 16px;
+}
