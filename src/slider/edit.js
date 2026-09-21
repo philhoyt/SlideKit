@@ -72,16 +72,20 @@ export default function Edit( { clientId, attributes, setAttributes } ) {
 		} ) ),
 	];
 
-	const { innerBlocks, selectedClientId, selectedBlockParents } = useSelect(
+	const { innerBlocks, selectedSlideIndex } = useSelect(
 		( select ) => {
 			const store = select( 'core/block-editor' );
+			const blocks = store.getBlocks( clientId );
 			const selected = store.getSelectedBlockClientId();
+			// The slide that is selected, or that contains the selection.
+			const candidates = selected
+				? [ selected, ...store.getBlockParents( selected ) ]
+				: [];
 			return {
-				innerBlocks: store.getBlocks( clientId ),
-				selectedClientId: selected,
-				selectedBlockParents: selected
-					? store.getBlockParents( selected )
-					: [],
+				innerBlocks: blocks,
+				selectedSlideIndex: blocks.findIndex( ( block ) =>
+					candidates.includes( block.clientId )
+				),
 			};
 		},
 		[ clientId ]
@@ -94,17 +98,13 @@ export default function Edit( { clientId, attributes, setAttributes } ) {
 		insertBlock( createBlock( 'slidekit/slide' ), slideCount, clientId );
 	};
 
-	// Follow the selection: selecting a slide (or anything inside it) shows it.
+	// Follow the selection: selecting a slide (or anything inside it) shows
+	// it. The index also moves when the selected slide is reordered.
 	useEffect( () => {
-		const candidates = [ selectedClientId, ...selectedBlockParents ];
-		const index = innerBlocks.findIndex( ( block ) =>
-			candidates.includes( block.clientId )
-		);
-		if ( index !== -1 ) {
-			setActiveSlide( index );
+		if ( selectedSlideIndex !== -1 ) {
+			setActiveSlide( selectedSlideIndex );
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [ selectedClientId ] );
+	}, [ selectedSlideIndex ] );
 
 	const displayIndex =
 		slideCount > 0 ? Math.min( activeSlide, slideCount - 1 ) : 0;
