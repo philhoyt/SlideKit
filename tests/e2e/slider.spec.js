@@ -323,3 +323,84 @@ test.describe( 'SlideKit fade', () => {
 		await expect( first ).toHaveCSS( 'opacity', '0' );
 	} );
 } );
+
+test.describe( 'SlideKit editor navigation', () => {
+	test( 'navigates slides from the canvas', async ( {
+		admin,
+		editor,
+		page,
+	} ) => {
+		await admin.createNewPost();
+		await editor.insertBlock( {
+			name: 'slidekit/slider',
+			innerBlocks: slides( 3 ),
+		} );
+
+		const slider = editor.canvas.locator( '.wp-block-slidekit-slider' );
+		const nav = slider.locator( '.slidekit-editor-nav' );
+		const count = nav.locator( '.slidekit-editor-nav__count' );
+		const prev = nav.getByRole( 'button', { name: 'Previous' } );
+		const next = nav.getByRole( 'button', { name: 'Next' } );
+		const selectedSlide = editor.canvas.locator(
+			'.wp-block-slidekit-slide.is-selected'
+		);
+
+		// Selected slider: bar visible, at the first slide.
+		await editor.selectBlocks( slider );
+		await expect( nav ).toBeVisible();
+		await expect( count ).toHaveText( '1 / 3' );
+		await expect( prev ).toHaveAttribute( 'aria-disabled', 'true' );
+
+		// Next shows and selects slide 2; the bar stays.
+		await next.click();
+		await expect( count ).toHaveText( '2 / 3' );
+		await expect( selectedSlide ).toContainText( 'Slide 2' );
+		await expect( nav ).toBeVisible();
+
+		// Last slide: Next is disabled.
+		await next.click();
+		await expect( count ).toHaveText( '3 / 3' );
+		await expect( next ).toHaveAttribute( 'aria-disabled', 'true' );
+
+		// Add slide appends, shows and selects the new slide.
+		await nav.getByRole( 'button', { name: 'Add slide' } ).click();
+		await expect( count ).toHaveText( '4 / 4' );
+		await expect( selectedSlide ).toHaveCount( 1 );
+		await expect( next ).toHaveAttribute( 'aria-disabled', 'true' );
+
+		// Selecting content inside slide 2 follows the selection.
+		await prev.click();
+		await prev.click();
+		await expect( count ).toHaveText( '2 / 4' );
+		await selectedSlide.getByText( 'Slide 2' ).click();
+		await expect( count ).toHaveText( '2 / 4' );
+		await expect( nav ).toBeVisible();
+
+		// Moving the selected slide up keeps it shown and updates the count.
+		// Previous then Next reselects slide 2 itself rather than its text.
+		await prev.click();
+		await next.click();
+		await expect( selectedSlide ).toContainText( 'Slide 2' );
+		await editor.clickBlockToolbarButton( 'Move up' );
+		await expect( count ).toHaveText( '1 / 4' );
+		await expect( selectedSlide ).toContainText( 'Slide 2' );
+
+		// Deleting the active last slide falls back to the new last slide.
+		await next.click();
+		await next.click();
+		await next.click();
+		await expect( count ).toHaveText( '4 / 4' );
+		await editor.clickBlockOptionsMenuItem( 'Delete' );
+		await editor.selectBlocks( slider );
+		await expect( count ).toHaveText( '3 / 3' );
+		await expect( next ).toHaveAttribute( 'aria-disabled', 'true' );
+
+		// Selecting outside the slider hides the bar; reselecting shows it.
+		await editor.canvas
+			.getByRole( 'textbox', { name: 'Add title' } )
+			.click();
+		await expect( nav ).toBeHidden();
+		await editor.selectBlocks( slider );
+		await expect( nav ).toBeVisible();
+	} );
+} );
