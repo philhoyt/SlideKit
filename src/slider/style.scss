@@ -2,8 +2,11 @@
  * Slider: front end and editor.
  *
  * Layout is driven by custom properties the block writes inline per breakpoint
- * (--slidekit-basis-* and --slidekit-gap-*). Everything visual is overridable
- * from theme CSS through the --slidekit-* properties below.
+ * (--slidekit-basis-* and --slidekit-gap-*). The mobile values are the base;
+ * the tablet and desktop media queries are added by slidekit_breakpoint_css()
+ * in PHP so they follow the theme's `settings.viewport` breakpoints and match
+ * the block editor's own Mobile / Tablet / Desktop states. Everything visual
+ * is overridable from theme CSS through the --slidekit-* properties below.
  */
 
 .wp-block-slidekit-slider {
@@ -20,16 +23,6 @@
 
 	position: relative;
 	max-width: 100%;
-
-	@media (min-width: 768px) {
-		--slidekit-basis: var(--slidekit-basis-tablet, var(--slidekit-basis-mobile, 100%));
-		--slidekit-gap: var(--slidekit-gap-tablet, var(--slidekit-gap-mobile, 0px));
-	}
-
-	@media (min-width: 1024px) {
-		--slidekit-basis: var(--slidekit-basis-desktop, var(--slidekit-basis-tablet, 100%));
-		--slidekit-gap: var(--slidekit-gap-desktop, var(--slidekit-gap-tablet, 0px));
-	}
 }
 
 .slidekit__viewport {

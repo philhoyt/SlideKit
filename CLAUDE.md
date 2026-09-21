@@ -13,6 +13,7 @@ Slider and Slide blocks for WordPress, built on Embla Carousel 8. Extracted from
 
 - The saved markup must never contain Embla class names. SlideKit owns its controls so the library can change without breaking existing posts.
 - Layout (slides per view, gap) is CSS, driven by `--slidekit-basis-*` and `--slidekit-gap-*` custom properties written inline by `save.js`. Do not move it into JavaScript.
+- The tablet/desktop media queries come from `slidekit_breakpoint_css()` in `slidekit.php`, which reads the theme's `settings.viewport` (core default 480px / 782px) so the slider agrees with the editor's Mobile / Tablet / Desktop states. Do not hardcode breakpoints in `style.scss`.
 - Any change to `save.js` output needs a `deprecated` entry.
 - Keep `view.js` free of editor code and `edit.js` free of Embla.
 - Versions to bump together: plugin header, `SLIDEKIT_VERSION`, `package.json`, `src/slider/block.json`, `src/slide/block.json`, `readme.txt` Stable tag.
