@@ -48,6 +48,86 @@ const BREAKPOINT_LABELS = {
 	Desktop: __( 'Desktop', 'slidekit' ),
 };
 
+/**
+ * "2 / 5" style position label for the toolbar and the canvas bar.
+ *
+ * @param {number} index Zero-based active slide.
+ * @param {number} count Slide count.
+ * @return {string} Label.
+ */
+function positionLabel( index, count ) {
+	if ( count === 0 ) {
+		return '— / —';
+	}
+	return sprintf(
+		/* translators: 1: current slide number, 2: slide count */
+		__( '%1$d / %2$d', 'slidekit' ),
+		index + 1,
+		count
+	);
+}
+
+/**
+ * Navigation bar rendered under the active slide in the canvas. It stays
+ * put while a slide (or something inside it) is selected, when the Slider's
+ * own toolbar is not showing.
+ *
+ * @param {Object}   props
+ * @param {number}   props.displayIndex Zero-based active slide.
+ * @param {number}   props.slideCount   Slide count.
+ * @param {boolean}  props.canGoPrev    Whether there is a previous slide.
+ * @param {boolean}  props.canGoNext    Whether there is a next slide.
+ * @param {Function} props.onPrev       Show the previous slide.
+ * @param {Function} props.onNext       Show the next slide.
+ * @param {Function} props.onAdd        Append a slide.
+ * @return {Element} The bar.
+ */
+function SlideNav( {
+	displayIndex,
+	slideCount,
+	canGoPrev,
+	canGoNext,
+	onPrev,
+	onNext,
+	onAdd,
+} ) {
+	return (
+		<div className="slidekit-editor-nav">
+			<Button
+				className="slidekit-editor-nav__prev"
+				variant="tertiary"
+				onClick={ onPrev }
+				disabled={ ! canGoPrev }
+				accessibleWhenDisabled
+				__next40pxDefaultSize
+			>
+				{ __( 'Previous', 'slidekit' ) }
+			</Button>
+			<span className="slidekit-editor-nav__count" aria-live="polite">
+				{ positionLabel( displayIndex, slideCount ) }
+			</span>
+			<Button
+				className="slidekit-editor-nav__next"
+				variant="tertiary"
+				onClick={ onNext }
+				disabled={ ! canGoNext }
+				accessibleWhenDisabled
+				__next40pxDefaultSize
+			>
+				{ __( 'Next', 'slidekit' ) }
+			</Button>
+			<Button
+				className="slidekit-add-slide"
+				variant="secondary"
+				onClick={ onAdd }
+				__next40pxDefaultSize
+			>
+				{ __( 'Add slide', 'slidekit' ) }
+			</Button>
+		</div>
+	);
+}
+
 export default function Edit( { clientId, attributes, setAttributes } ) {
 	const {
 		centeredSlides,
@@ -131,17 +211,18 @@ export default function Edit( { clientId, attributes, setAttributes } ) {
 		{
 			allowedBlocks: [ 'slidekit/slide' ],
 			template: [ [ 'slidekit/slide' ] ],
-			// A labelled button below the active slide, instead of the default
-			// corner "+" that overlaps the slide's own appender.
+			// Navigation and Add slide below the active slide, instead of the
+			// default corner "+" that overlaps the slide's own appender.
 			renderAppender: () => (
-				<Button
-					className="slidekit-add-slide"
-					variant="secondary"
-					onClick={ addSlide }
-					__next40pxDefaultSize
-				>
-					{ __( 'Add slide', 'slidekit' ) }
-				</Button>
+				<SlideNav
+					displayIndex={ displayIndex }
+					slideCount={ slideCount }
+					canGoPrev={ canGoPrev }
+					canGoNext={ canGoNext }
+					onPrev={ () => goTo( displayIndex - 1 ) }
+					onNext={ () => goTo( displayIndex + 1 ) }
+					onAdd={ addSlide }
+				/>
 			),
 		}
 	);
@@ -162,14 +243,7 @@ export default function Edit( { clientId, attributes, setAttributes } ) {
 						disabled={ ! canGoPrev }
 					/>
 					<span className="slidekit-toolbar__counter">
-						{ slideCount > 0
-							? sprintf(
-									/* translators: 1: current slide number, 2: slide count */
-									__( '%1$d / %2$d', 'slidekit' ),
-									displayIndex + 1,
-									slideCount
-								)
-							: '— / —' }
+						{ positionLabel( displayIndex, slideCount ) }
 					</span>
 					<ToolbarButton
 						icon="arrow-right-alt2"
