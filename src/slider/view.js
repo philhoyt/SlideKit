@@ -9,11 +9,34 @@
 
 /* global IntersectionObserver */
 
+import { __, sprintf } from '@wordpress/i18n';
+
 import EmblaCarousel from 'embla-carousel';
 import Autoplay from 'embla-carousel-autoplay';
 import Fade from 'embla-carousel-fade';
 
 const SELECTOR = '.wp-block-slidekit-slider';
+
+const ICON_PAUSE =
+	'<svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false"><path d="M7 5h4v14H7zm6 0h4v14h-4z" fill="currentColor"/></svg>';
+const ICON_PLAY =
+	'<svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false"><path d="M8 5v14l11-7z" fill="currentColor"/></svg>';
+
+/**
+ * "3 / 5" style position label.
+ *
+ * @param {number} index Zero-based position.
+ * @param {number} count Number of positions.
+ * @return {string} Label.
+ */
+function positionLabel( index, count ) {
+	return sprintf(
+		/* translators: 1: current position, 2: total positions */
+		__( '%1$d / %2$d', 'slidekit' ),
+		index + 1,
+		count
+	);
+}
 
 const reducedMotion = window.matchMedia( '(prefers-reduced-motion: reduce)' );
 
@@ -108,17 +131,21 @@ function initSlider( root ) {
 		slide.setAttribute( 'role', 'group' );
 		slide.setAttribute( 'aria-roledescription', 'slide' );
 		if ( ! slide.hasAttribute( 'aria-label' ) ) {
-			slide.setAttribute( 'aria-label', `${ i + 1 } / ${ total }` );
+			slide.setAttribute( 'aria-label', positionLabel( i, total ) );
 		}
 	} );
 
 	// --- Arrows ---------------------------------------------------------------
+	// The saved markup carries English labels as a no-JS fallback; replace
+	// them with translated ones.
 	const prev = root.querySelector( '.slidekit__arrow--prev' );
 	const next = root.querySelector( '.slidekit__arrow--next' );
 	if ( prev ) {
+		prev.setAttribute( 'aria-label', __( 'Previous slide', 'slidekit' ) );
 		prev.addEventListener( 'click', () => embla.scrollPrev() );
 	}
 	if ( next ) {
+		next.setAttribute( 'aria-label', __( 'Next slide', 'slidekit' ) );
 		next.addEventListener( 'click', () => embla.scrollNext() );
 	}
 
@@ -162,7 +189,7 @@ function initSlider( root ) {
 			const dot = document.createElement( 'button' );
 			dot.type = 'button';
 			dot.className = 'slidekit__dot';
-			dot.setAttribute( 'aria-label', `${ i + 1 } / ${ snaps.length }` );
+			dot.setAttribute( 'aria-label', positionLabel( i, snaps.length ) );
 			dot.addEventListener( 'click', () => embla.scrollTo( i ) );
 			pagination.appendChild( dot );
 			return dot;
@@ -193,7 +220,10 @@ function initSlider( root ) {
 			} );
 		}
 		if ( fraction ) {
-			fraction.textContent = `${ index + 1 } / ${ embla.scrollSnapList().length }`;
+			fraction.textContent = positionLabel(
+				index,
+				embla.scrollSnapList().length
+			);
 		}
 	}
 
@@ -211,9 +241,10 @@ function initSlider( root ) {
 
 	function announce() {
 		if ( live ) {
-			live.textContent = `${ embla.selectedScrollSnap() + 1 } / ${
+			live.textContent = positionLabel(
+				embla.selectedScrollSnap(),
 				embla.scrollSnapList().length
-			}`;
+			);
 		}
 	}
 
@@ -249,13 +280,49 @@ function initSlider( root ) {
 		img.loading = 'eager';
 	} );
 
-	// --- Autoplay: only run while on screen ------------------------------------
+	// --- Autoplay: a pause control, and only run while on screen ---------------
 	const autoplay = embla.plugins().autoplay;
 	if ( autoplay ) {
+		// Once a visitor pauses, nothing restarts it but the same button. The
+		// plugin resumes on mouse leave and focus out regardless, so undo that.
+		let userPaused = false;
+
+		const toggle = document.createElement( 'button' );
+		toggle.type = 'button';
+		toggle.className = 'slidekit__autoplay';
+		viewport.appendChild( toggle );
+
+		function syncToggle() {
+			const playing = ! userPaused;
+			toggle.innerHTML = playing ? ICON_PAUSE : ICON_PLAY;
+			toggle.setAttribute(
+				'aria-label',
+				playing
+					? __( 'Stop automatic slide show', 'slidekit' )
+					: __( 'Start automatic slide show', 'slidekit' )
+			);
+		}
+
+		toggle.addEventListener( 'click', () => {
+			userPaused = ! userPaused;
+			if ( userPaused ) {
+				autoplay.stop();
+			} else {
+				autoplay.play();
+			}
+			syncToggle();
+		} );
+
+		embla.on( 'autoplay:play', () => {
+			if ( userPaused ) {
+				autoplay.stop();
+			}
+		} );
+
 		const io = new IntersectionObserver(
 			( entries ) => {
 				entries.forEach( ( entry ) => {
-					if ( entry.isIntersecting ) {
+					if ( entry.isIntersecting && ! userPaused ) {
 						autoplay.play();
 					} else {
 						autoplay.stop();
@@ -265,6 +332,7 @@ function initSlider( root ) {
 			{ rootMargin: '100px' }
 		);
 		io.observe( root );
+		syncToggle();
 	}
 
 	embla

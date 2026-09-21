@@ -15,6 +15,7 @@
 	--slidekit-arrow-size: 44px;
 	--slidekit-arrow-color: currentcolor;
 	--slidekit-arrow-background: rgba(255, 255, 255, 0.85);
+	--slidekit-autoplay-size: 36px;
 	--slidekit-dot-size: 10px;
 	--slidekit-dot-color: currentcolor;
 	--slidekit-progress-height: 4px;
@@ -26,6 +27,7 @@
 }
 
 .slidekit__viewport {
+	position: relative;
 	overflow: hidden;
 
 	&:focus-visible {
@@ -100,6 +102,34 @@
 	svg {
 		width: 50%;
 		height: 50%;
+	}
+}
+
+/* Autoplay toggle, added by the script when autoplay is on */
+.slidekit__autoplay {
+	position: absolute;
+	inset-block-end: 12px;
+	inset-inline-end: 12px;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: var(--slidekit-autoplay-size);
+	height: var(--slidekit-autoplay-size);
+	padding: 0;
+	border: 0;
+	border-radius: 50%;
+	background: var(--slidekit-arrow-background);
+	color: var(--slidekit-arrow-color);
+	cursor: pointer;
+
+	&:focus-visible {
+		outline: 2px solid currentcolor;
+		outline-offset: 2px;
+	}
+
+	svg {
+		width: 60%;
+		height: 60%;
 	}
 }
 
