@@ -13,16 +13,25 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Set up Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: '22'
           cache: 'npm'
 
       - name: Install JS dependencies
         run: npm ci
+
+      - name: Install PHP dependencies
+        run: composer install --no-interaction --no-progress --prefer-dist
+
+      - name: Lint
+        run: |
+          npm run lint:php
+          npm run lint:js
+          npm run lint:css
 
       - name: Build assets
         run: npm run build
@@ -36,7 +45,7 @@ jobs:
           awk "/^= ${VERSION} =/{found=1} found && /^= [0-9]/ && !/^= ${VERSION} =/{exit} found{print}" readme.txt > changelog_body.txt
 
       - name: Publish release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           files: |
             slidekit.zip
