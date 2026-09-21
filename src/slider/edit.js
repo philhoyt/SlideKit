@@ -1,4 +1,9 @@
-import { useState, useEffect } from '@wordpress/element';
+import {
+	createContext,
+	useContext,
+	useState,
+	useEffect,
+} from '@wordpress/element';
 import { useSelect, useDispatch } from '@wordpress/data';
 import { createBlock } from '@wordpress/blocks';
 import {
@@ -68,6 +73,14 @@ function positionLabel( index, count ) {
 }
 
 /**
+ * Live values for the canvas navigation bar. The appender component handed
+ * to useInnerBlocksProps must keep the same identity across renders or React
+ * remounts it (and drops focus) on every slide change, so the bar reads its
+ * props from here instead of a closure.
+ */
+const SlideNavContext = createContext( null );
+
+/**
  * Navigation bar rendered under the active slide in the canvas. It stays
  * put while a slide (or something inside it) is selected, when the Slider's
  * own toolbar is not showing.
@@ -126,6 +139,15 @@ function SlideNav( {
 			</Button>
 		</div>
 	);
+}
+
+/**
+ * Stable appender component: same identity every render.
+ *
+ * @return {Element} The bar.
+ */
+function SlideNavAppender() {
+	return <SlideNav { ...useContext( SlideNavContext ) } />;
 }
 
 export default function Edit( { clientId, attributes, setAttributes } ) {
@@ -197,7 +219,9 @@ export default function Edit( { clientId, attributes, setAttributes } ) {
 		const clamped = Math.max( 0, Math.min( slideCount - 1, index ) );
 		setActiveSlide( clamped );
 		if ( innerBlocks[ clamped ] ) {
-			selectBlock( innerBlocks[ clamped ].clientId );
+			// Select without moving focus, so Previous / Next can be pressed
+			// repeatedly and the count is announced once, by the live region.
+			selectBlock( innerBlocks[ clamped ].clientId, null );
 		}
 	};
 
@@ -213,19 +237,18 @@ export default function Edit( { clientId, attributes, setAttributes } ) {
 			template: [ [ 'slidekit/slide' ] ],
 			// Navigation and Add slide below the active slide, instead of the
 			// default corner "+" that overlaps the slide's own appender.
-			renderAppender: () => (
-				<SlideNav
-					displayIndex={ displayIndex }
-					slideCount={ slideCount }
-					canGoPrev={ canGoPrev }
-					canGoNext={ canGoNext }
-					onPrev={ () => goTo( displayIndex - 1 ) }
-					onNext={ () => goTo( displayIndex + 1 ) }
-					onAdd={ addSlide }
-				/>
-			),
+			renderAppender: SlideNavAppender,
 		}
 	);
+	const slideNav = {
+		displayIndex,
+		slideCount,
+		canGoPrev,
+		canGoNext,
+		onPrev: () => goTo( displayIndex - 1 ),
+		onNext: () => goTo( displayIndex + 1 ),
+		onAdd: addSlide,
+	};
 
 	return (
 		<>
@@ -422,9 +445,11 @@ export default function Edit( { clientId, attributes, setAttributes } ) {
 				</PanelBody>
 			</InspectorControls>
 
-			<div { ...blockProps }>
-				<div { ...innerBlocksProps } />
-			</div>
+			<SlideNavContext.Provider value={ slideNav }>
+				<div { ...blockProps }>
+					<div { ...innerBlocksProps } />
+				</div>
+			</SlideNavContext.Provider>
 		</>
 	);
 }
