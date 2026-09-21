@@ -1,0 +1,28 @@
+/**
+ * Slider: editor only.
+ *
+ * The editor shows one slide at a time; the visible slide is chosen by a
+ * scoped <style> that edit.js renders, driven by the toolbar or selection.
+ */
+
+.slidekit--editor {
+	min-height: 2em;
+
+	> .slidekit__container {
+		display: block;
+		margin-left: 0;
+	}
+
+	.wp-block-slidekit-slide {
+		padding-left: 0;
+	}
+}
+
+.slidekit-toolbar__counter {
+	display: flex;
+	align-items: center;
+	padding: 0 8px;
+	font-size: 13px;
+	white-space: nowrap;
+	font-variant-numeric: tabular-nums;
+}

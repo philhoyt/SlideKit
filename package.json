@@ -1,0 +1,40 @@
+{
+	"name": "slidekit",
+	"version": "0.1.0",
+	"description": "Slider and Slide blocks for the WordPress block editor, built on Embla Carousel.",
+	"author": "Phil Hoyt",
+	"license": "GPL-2.0-or-later",
+	"private": true,
+	"scripts": {
+		"build": "wp-scripts build --blocks-manifest",
+		"start": "wp-scripts start --blocks-manifest",
+		"format": "wp-scripts format",
+		"lint:css": "wp-scripts lint-style",
+		"lint:js": "wp-scripts lint-js",
+		"lint:php": "vendor/bin/phpcs",
+		"lint:php:fix": "vendor/bin/phpcbf",
+		"packages-update": "wp-scripts packages-update",
+		"plugin-zip": "wp-scripts plugin-zip",
+		"env:start": "wp-env start",
+		"env:stop": "wp-env stop",
+		"env:cli": "wp-env run cli wp",
+		"test:e2e": "wp-scripts test-playwright"
+	},
+	"files": [
+		"slidekit.php",
+		"readme.txt",
+		"build",
+		"lib"
+	],
+	"dependencies": {
+		"embla-carousel": "^8.6.0",
+		"embla-carousel-autoplay": "^8.6.0",
+		"embla-carousel-fade": "^8.6.0"
+	},
+	"devDependencies": {
+		"@playwright/test": "^1.63.0",
+		"@wordpress/e2e-test-utils-playwright": "^2.0.0",
+		"@wordpress/env": "^11.15.0",
+		"@wordpress/scripts": "^35.0.0"
+	}
+}

@@ -1,0 +1,36 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "slidekit/slide",
+	"version": "0.1.0",
+	"title": "Slide",
+	"category": "design",
+	"icon": "slides",
+	"description": "One panel of a Slider. Put any blocks inside.",
+	"textdomain": "slidekit",
+	"parent": [ "slidekit/slider" ],
+	"attributes": {
+		"ariaLabel": { "type": "string", "default": "" }
+	},
+	"supports": {
+		"html": false,
+		"reusable": false,
+		"layout": true,
+		"color": {
+			"background": true,
+			"text": true,
+			"gradients": true
+		},
+		"spacing": {
+			"padding": true
+		},
+		"__experimentalBorder": {
+			"radius": true,
+			"color": true,
+			"width": true
+		}
+	},
+	"editorScript": "file:./index.js",
+	"editorStyle": "file:./index.css",
+	"style": "file:./style-index.css"
+}

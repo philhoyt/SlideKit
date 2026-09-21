@@ -1,0 +1,172 @@
+/**
+ * Slider: front end and editor.
+ *
+ * Layout is driven by custom properties the block writes inline per breakpoint
+ * (--slidekit-basis-* and --slidekit-gap-*). Everything visual is overridable
+ * from theme CSS through the --slidekit-* properties below.
+ */
+
+.wp-block-slidekit-slider {
+	--slidekit-basis: var(--slidekit-basis-mobile, 100%);
+	--slidekit-gap: var(--slidekit-gap-mobile, 0px);
+	--slidekit-arrow-size: 44px;
+	--slidekit-arrow-color: currentcolor;
+	--slidekit-arrow-background: rgba(255, 255, 255, 0.85);
+	--slidekit-dot-size: 10px;
+	--slidekit-dot-color: currentcolor;
+	--slidekit-progress-height: 4px;
+	--slidekit-progress-color: currentcolor;
+	--slidekit-progress-track: rgba(0, 0, 0, 0.1);
+
+	position: relative;
+	max-width: 100%;
+
+	@media (min-width: 768px) {
+		--slidekit-basis: var(--slidekit-basis-tablet, var(--slidekit-basis-mobile, 100%));
+		--slidekit-gap: var(--slidekit-gap-tablet, var(--slidekit-gap-mobile, 0px));
+	}
+
+	@media (min-width: 1024px) {
+		--slidekit-basis: var(--slidekit-basis-desktop, var(--slidekit-basis-tablet, 100%));
+		--slidekit-gap: var(--slidekit-gap-desktop, var(--slidekit-gap-tablet, 0px));
+	}
+}
+
+.slidekit__viewport {
+	overflow: hidden;
+
+	&:focus-visible {
+		outline: 2px solid currentcolor;
+		outline-offset: 2px;
+	}
+}
+
+.slidekit__container {
+	display: flex;
+	margin-left: calc(var(--slidekit-gap) * -1);
+	touch-action: pan-y pinch-zoom;
+	backface-visibility: hidden;
+}
+
+.wp-block-slidekit-slide {
+	flex: 0 0 var(--slidekit-basis);
+	min-width: 0;
+	box-sizing: border-box;
+	padding-left: var(--slidekit-gap);
+}
+
+/* Fade: full-width slides, no gap. The plugin stacks and cross-fades them. */
+.slidekit--fade {
+	--slidekit-basis: 100%;
+	--slidekit-gap: 0px;
+}
+
+/* Every slide fits: hide the controls. */
+.wp-block-slidekit-slider.is-static {
+
+	.slidekit__arrows,
+	.slidekit__pagination {
+		display: none;
+	}
+}
+
+/* Arrows */
+.slidekit__arrows {
+	pointer-events: none;
+	position: absolute;
+	inset: 0;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.slidekit__arrow {
+	pointer-events: auto;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: var(--slidekit-arrow-size);
+	height: var(--slidekit-arrow-size);
+	padding: 0;
+	border: 0;
+	border-radius: 50%;
+	background: var(--slidekit-arrow-background);
+	color: var(--slidekit-arrow-color);
+	cursor: pointer;
+
+	&[disabled] {
+		opacity: 0.35;
+		cursor: default;
+	}
+
+	&:focus-visible {
+		outline: 2px solid currentcolor;
+		outline-offset: 2px;
+	}
+
+	svg {
+		width: 50%;
+		height: 50%;
+	}
+}
+
+/* Pagination */
+.slidekit__pagination {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	margin-top: 12px;
+}
+
+.slidekit__dot {
+	width: var(--slidekit-dot-size);
+	height: var(--slidekit-dot-size);
+	padding: 0;
+	border: 0;
+	border-radius: 50%;
+	background: var(--slidekit-dot-color);
+	opacity: 0.35;
+	cursor: pointer;
+	transition: opacity 150ms;
+
+	&.is-selected {
+		opacity: 1;
+	}
+
+	&:focus-visible {
+		outline: 2px solid currentcolor;
+		outline-offset: 2px;
+	}
+}
+
+.slidekit__fraction {
+	font-variant-numeric: tabular-nums;
+}
+
+.slidekit__progress {
+	width: 100%;
+	height: var(--slidekit-progress-height);
+	background: var(--slidekit-progress-track);
+	overflow: hidden;
+}
+
+.slidekit__progress-bar {
+	width: 100%;
+	height: 100%;
+	background: var(--slidekit-progress-color);
+	transform: scaleX(0);
+	transform-origin: left;
+}
+
+/* Visually hidden live region */
+.slidekit__sr-only {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	padding: 0;
+	margin: -1px;
+	overflow: hidden;
+	clip-path: inset(50%);
+	white-space: nowrap;
+	border: 0;
+}

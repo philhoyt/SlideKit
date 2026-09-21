@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<ruleset name="SlideKit">
+	<description>WordPress Coding Standards for the SlideKit plugin.</description>
+
+	<file>slidekit.php</file>
+
+	<arg name="basepath" value="."/>
+	<arg name="colors"/>
+	<arg value="sp"/>
+
+	<config name="minimum_supported_wp_version" value="6.8"/>
+	<config name="testVersion" value="7.4-"/>
+
+	<rule ref="WordPress"/>
+</ruleset>

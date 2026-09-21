@@ -1,0 +1,61 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "slidekit/slider",
+	"version": "0.1.0",
+	"title": "Slider",
+	"category": "design",
+	"icon": "slides",
+	"description": "A slider. Add a Slide for each panel and put any blocks inside it.",
+	"keywords": [ "slider", "carousel", "slideshow", "swiper" ],
+	"textdomain": "slidekit",
+	"attributes": {
+		"slidesPerViewMobile": { "type": "string", "default": "1" },
+		"slidesPerViewTablet": { "type": "string", "default": "2" },
+		"slidesPerViewDesktop": { "type": "string", "default": "3" },
+		"gapMobile": { "type": "string", "default": "20" },
+		"gapTablet": { "type": "string", "default": "40" },
+		"gapDesktop": { "type": "string", "default": "40" },
+		"centeredSlides": { "type": "boolean", "default": false },
+		"autoplay": { "type": "boolean", "default": false },
+		"autoplayDelay": { "type": "number", "default": 4000 },
+		"loop": { "type": "boolean", "default": true },
+		"showArrows": { "type": "boolean", "default": true },
+		"showPagination": { "type": "boolean", "default": true },
+		"paginationType": {
+			"type": "string",
+			"default": "dots",
+			"enum": [ "dots", "fraction", "progress" ]
+		},
+		"effect": {
+			"type": "string",
+			"default": "slide",
+			"enum": [ "slide", "fade" ]
+		},
+		"ariaLabel": { "type": "string", "default": "" }
+	},
+	"supports": {
+		"html": false,
+		"anchor": true,
+		"align": [ "wide", "full" ],
+		"spacing": {
+			"margin": [ "top", "bottom" ],
+			"padding": true
+		},
+		"color": {
+			"background": true,
+			"text": true
+		}
+	},
+	"example": {
+		"attributes": { "slidesPerViewDesktop": "1", "slidesPerViewTablet": "1" },
+		"innerBlocks": [
+			{ "name": "slidekit/slide", "innerBlocks": [ { "name": "core/paragraph", "attributes": { "content": "Slide one" } } ] },
+			{ "name": "slidekit/slide", "innerBlocks": [ { "name": "core/paragraph", "attributes": { "content": "Slide two" } } ] }
+		]
+	},
+	"editorScript": "file:./index.js",
+	"editorStyle": "file:./index.css",
+	"style": "file:./style-index.css",
+	"viewScript": "file:./view.js"
+}

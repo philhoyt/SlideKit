@@ -1,0 +1,9 @@
+/**
+ * Slide: editor only. A dashed outline so each slide reads as a panel.
+ */
+
+.editor-styles-wrapper .wp-block-slidekit-slide {
+	min-height: 100px;
+	border: 1px dashed rgba(0, 0, 0, 0.15);
+	border-radius: 2px;
+}
