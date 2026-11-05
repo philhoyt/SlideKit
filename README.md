@@ -10,7 +10,7 @@ A Slide is a container: put an image, a cover, a group, or a query loop inside i
 
 | Block | Description |
 |---|---|
-| `slidekit/slider` | The slider. Holds Slide blocks and all the controls. |
+| `slidekit/slider` | The slider. Holds Slide blocks and all the controls. In the editor it shows one slide at a time with Previous, Next, a count and Add slide underneath. |
 | `slidekit/slide` | One panel. Any inner blocks. Supports layout, colour, padding and border. |
 
 ## Front end

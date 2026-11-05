@@ -1,4 +1,9 @@
-import { useState, useEffect } from '@wordpress/element';
+import {
+	createContext,
+	useContext,
+	useState,
+	useEffect,
+} from '@wordpress/element';
 import { useSelect, useDispatch } from '@wordpress/data';
 import { createBlock } from '@wordpress/blocks';
 import {
@@ -48,6 +53,103 @@ const BREAKPOINT_LABELS = {
 	Desktop: __( 'Desktop', 'slidekit' ),
 };
 
+/**
+ * "2 / 5" style position label for the toolbar and the canvas bar.
+ *
+ * @param {number} index Zero-based active slide.
+ * @param {number} count Slide count.
+ * @return {string} Label.
+ */
+function positionLabel( index, count ) {
+	if ( count === 0 ) {
+		return '— / —';
+	}
+	return sprintf(
+		/* translators: 1: current slide number, 2: slide count */
+		__( '%1$d / %2$d', 'slidekit' ),
+		index + 1,
+		count
+	);
+}
+
+/**
+ * Live values for the canvas navigation bar. The appender component handed
+ * to useInnerBlocksProps must keep the same identity across renders or React
+ * remounts it (and drops focus) on every slide change, so the bar reads its
+ * props from here instead of a closure.
+ */
+const SlideNavContext = createContext( null );
+
+/**
+ * Navigation bar rendered under the active slide in the canvas. It stays
+ * put while a slide (or something inside it) is selected, when the Slider's
+ * own toolbar is not showing.
+ *
+ * @param {Object}   props
+ * @param {number}   props.displayIndex Zero-based active slide.
+ * @param {number}   props.slideCount   Slide count.
+ * @param {boolean}  props.canGoPrev    Whether there is a previous slide.
+ * @param {boolean}  props.canGoNext    Whether there is a next slide.
+ * @param {Function} props.onPrev       Show the previous slide.
+ * @param {Function} props.onNext       Show the next slide.
+ * @param {Function} props.onAdd        Append a slide.
+ * @return {Element} The bar.
+ */
+function SlideNav( {
+	displayIndex,
+	slideCount,
+	canGoPrev,
+	canGoNext,
+	onPrev,
+	onNext,
+	onAdd,
+} ) {
+	return (
+		<div className="slidekit-editor-nav">
+			<Button
+				className="slidekit-editor-nav__prev"
+				variant="tertiary"
+				onClick={ onPrev }
+				disabled={ ! canGoPrev }
+				accessibleWhenDisabled
+				__next40pxDefaultSize
+			>
+				{ __( 'Previous', 'slidekit' ) }
+			</Button>
+			<span className="slidekit-editor-nav__count" aria-live="polite">
+				{ positionLabel( displayIndex, slideCount ) }
+			</span>
+			<Button
+				className="slidekit-editor-nav__next"
+				variant="tertiary"
+				onClick={ onNext }
+				disabled={ ! canGoNext }
+				accessibleWhenDisabled
+				__next40pxDefaultSize
+			>
+				{ __( 'Next', 'slidekit' ) }
+			</Button>
+			<Button
+				className="slidekit-add-slide"
+				variant="secondary"
+				onClick={ onAdd }
+				__next40pxDefaultSize
+			>
+				{ __( 'Add slide', 'slidekit' ) }
+			</Button>
+		</div>
+	);
+}
+
+/**
+ * Stable appender component: same identity every render.
+ *
+ * @return {Element} The bar.
+ */
+function SlideNavAppender() {
+	return <SlideNav { ...useContext( SlideNavContext ) } />;
+}
+
 export default function Edit( { clientId, attributes, setAttributes } ) {
 	const {
 		centeredSlides,
@@ -72,16 +174,20 @@ export default function Edit( { clientId, attributes, setAttributes } ) {
 		} ) ),
 	];
 
-	const { innerBlocks, selectedClientId, selectedBlockParents } = useSelect(
+	const { innerBlocks, selectedSlideIndex } = useSelect(
 		( select ) => {
 			const store = select( 'core/block-editor' );
+			const blocks = store.getBlocks( clientId );
 			const selected = store.getSelectedBlockClientId();
+			// The slide that is selected, or that contains the selection.
+			const candidates = selected
+				? [ selected, ...store.getBlockParents( selected ) ]
+				: [];
 			return {
-				innerBlocks: store.getBlocks( clientId ),
-				selectedClientId: selected,
-				selectedBlockParents: selected
-					? store.getBlockParents( selected )
-					: [],
+				innerBlocks: blocks,
+				selectedSlideIndex: blocks.findIndex( ( block ) =>
+					candidates.includes( block.clientId )
+				),
 			};
 		},
 		[ clientId ]
@@ -94,26 +200,28 @@ export default function Edit( { clientId, attributes, setAttributes } ) {
 		insertBlock( createBlock( 'slidekit/slide' ), slideCount, clientId );
 	};
 
-	// Follow the selection: selecting a slide (or anything inside it) shows it.
+	// Follow the selection: selecting a slide (or anything inside it) shows
+	// it. The index also moves when the selected slide is reordered.
 	useEffect( () => {
-		const candidates = [ selectedClientId, ...selectedBlockParents ];
-		const index = innerBlocks.findIndex( ( block ) =>
-			candidates.includes( block.clientId )
-		);
-		if ( index !== -1 ) {
-			setActiveSlide( index );
+		if ( selectedSlideIndex !== -1 ) {
+			setActiveSlide( selectedSlideIndex );
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [ selectedClientId ] );
+	}, [ selectedSlideIndex ] );
 
+	// activeSlide can point past the end after a deletion; this is the slide
+	// actually shown, and what every control reasons about.
 	const displayIndex =
 		slideCount > 0 ? Math.min( activeSlide, slideCount - 1 ) : 0;
+	const canGoPrev = displayIndex > 0;
+	const canGoNext = displayIndex < slideCount - 1;
 
 	const goTo = ( index ) => {
 		const clamped = Math.max( 0, Math.min( slideCount - 1, index ) );
 		setActiveSlide( clamped );
 		if ( innerBlocks[ clamped ] ) {
-			selectBlock( innerBlocks[ clamped ].clientId );
+			// Select without moving focus, so Previous / Next can be pressed
+			// repeatedly and the count is announced once, by the live region.
+			selectBlock( innerBlocks[ clamped ].clientId, null );
 		}
 	};
 
@@ -127,20 +235,20 @@ export default function Edit( { clientId, attributes, setAttributes } ) {
 		{
 			allowedBlocks: [ 'slidekit/slide' ],
 			template: [ [ 'slidekit/slide' ] ],
-			// A labelled button below the active slide, instead of the default
-			// corner "+" that overlaps the slide's own appender.
-			renderAppender: () => (
-				<Button
-					className="slidekit-add-slide"
-					variant="secondary"
-					onClick={ addSlide }
-					__next40pxDefaultSize
-				>
-					{ __( 'Add slide', 'slidekit' ) }
-				</Button>
-			),
+			// Navigation and Add slide below the active slide, instead of the
+			// default corner "+" that overlaps the slide's own appender.
+			renderAppender: SlideNavAppender,
 		}
 	);
+	const slideNav = {
+		displayIndex,
+		slideCount,
+		canGoPrev,
+		canGoNext,
+		onPrev: () => goTo( displayIndex - 1 ),
+		onNext: () => goTo( displayIndex + 1 ),
+		onAdd: addSlide,
+	};
 
 	return (
 		<>
@@ -154,26 +262,17 @@ export default function Edit( { clientId, attributes, setAttributes } ) {
 					<ToolbarButton
 						icon="arrow-left-alt2"
 						label={ __( 'Previous slide', 'slidekit' ) }
-						onClick={ () => goTo( activeSlide - 1 ) }
-						disabled={ activeSlide === 0 || slideCount === 0 }
+						onClick={ () => goTo( displayIndex - 1 ) }
+						disabled={ ! canGoPrev }
 					/>
 					<span className="slidekit-toolbar__counter">
-						{ slideCount > 0
-							? sprintf(
-									/* translators: 1: current slide number, 2: slide count */
-									__( '%1$d / %2$d', 'slidekit' ),
-									displayIndex + 1,
-									slideCount
-								)
-							: '— / —' }
+						{ positionLabel( displayIndex, slideCount ) }
 					</span>
 					<ToolbarButton
 						icon="arrow-right-alt2"
 						label={ __( 'Next slide', 'slidekit' ) }
-						onClick={ () => goTo( activeSlide + 1 ) }
-						disabled={
-							activeSlide >= slideCount - 1 || slideCount === 0
-						}
+						onClick={ () => goTo( displayIndex + 1 ) }
+						disabled={ ! canGoNext }
 					/>
 				</ToolbarGroup>
 			</BlockControls>
@@ -346,9 +445,11 @@ export default function Edit( { clientId, attributes, setAttributes } ) {
 				</PanelBody>
 			</InspectorControls>
 
-			<div { ...blockProps }>
-				<div { ...innerBlocksProps } />
-			</div>
+			<SlideNavContext.Provider value={ slideNav }>
+				<div { ...blockProps }>
+					<div { ...innerBlocksProps } />
+				</div>
+			</SlideNavContext.Provider>
 		</>
 	);
 }
