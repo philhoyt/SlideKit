@@ -3,7 +3,7 @@ Contributors:      philhoyt
 Tags:              slider, carousel, slideshow, block, embla
 Requires at least: 6.8
 Tested up to:      7.1
-Stable tag:        0.1.0
+Stable tag:        0.1.1
 Requires PHP:      7.4
 License:           GPL-2.0-or-later
 License URI:       https://www.gnu.org/licenses/gpl-2.0.html
@@ -56,6 +56,9 @@ A cross-fade stacks slides on top of each other, so there is only ever one visib
 The script loads only where a Slider block is present. On block themes the stylesheet does too; classic themes load the stylesheets of every registered block on every page, which is how WordPress handles block styles there.
 
 == Changelog ==
+
+= 0.1.1 =
+* Fix: The update checker's bundled Markdown and readme parsers now ship with the plugin, so update checks no longer fail with a missing class.
 
 = 0.1.0 =
 * Add: Slider and Slide blocks. A slide holds any blocks; the slider sets slides per view and gap per breakpoint, slide or fade transition, loop, centered slides, arrows, and dot, fraction or progress bar pagination.
