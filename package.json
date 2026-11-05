@@ -19,7 +19,7 @@
 		"env:stop": "wp-env stop",
 		"env:cli": "wp-env run cli wp",
 		"test:unit": "wp-scripts test-unit-jest",
-		"test:php": "wp-env run tests-cli --env-cwd=wp-content/plugins/slidekit vendor/bin/phpunit",
+		"test:php": "wp-env run tests-cli --env-cwd=wp-content/plugins/$(basename \"$PWD\") vendor/bin/phpunit",
 		"test:e2e": "wp-scripts test-playwright"
 	},
 	"files": [
