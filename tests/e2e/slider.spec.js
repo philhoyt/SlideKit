@@ -325,11 +325,7 @@ test.describe( 'SlideKit fade', () => {
 } );
 
 test.describe( 'SlideKit editor navigation', () => {
-	test( 'navigates slides from the canvas', async ( {
-		admin,
-		editor,
-		page,
-	} ) => {
+	test( 'navigates slides from the canvas', async ( { admin, editor } ) => {
 		await admin.createNewPost();
 		await editor.insertBlock( {
 			name: 'slidekit/slider',

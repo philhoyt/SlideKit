@@ -3,6 +3,7 @@
  */
 
 const wpScriptsConfig = require( '@wordpress/scripts/config/eslint.config.cjs' );
+const jestPlugin = require( 'eslint-plugin-jest' );
 
 module.exports = [
 	{
@@ -23,5 +24,11 @@ module.exports = [
 				'@wordpress/i18n',
 			],
 		},
+	},
+	// The unit suite stays on Jest (wp-scripts test-unit-jest); the default
+	// test override in @wordpress/eslint-plugin 27+ targets Vitest instead.
+	{
+		...jestPlugin.configs[ 'flat/recommended' ],
+		files: [ 'src/**/*.test.js' ],
 	},
 ];
