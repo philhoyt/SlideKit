@@ -58,4 +58,8 @@ The script loads only where a Slider block is present. On block themes the style
 == Changelog ==
 
 = 0.1.0 =
-* Initial release.
+* Add: Slider and Slide blocks. A slide holds any blocks; the slider sets slides per view and gap per breakpoint, slide or fade transition, loop, centered slides, arrows, and dot, fraction or progress bar pagination.
+* Add: autoplay with a delay and a pause button. It pauses on hover, on focus and off screen, and is skipped for visitors who prefer reduced motion.
+* Add: Previous, Next, a slide count and an Add slide button under the active slide in the editor, shown while the slider is selected.
+* Add: keyboard arrow navigation, labelled slides and live region announcements on the front end.
+* Add: updates from GitHub releases through the Plugins screen.
