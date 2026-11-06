@@ -5,7 +5,7 @@
  * Description:       Slider and Slide blocks for the block editor. Put any blocks in a slide; SlideKit handles the sliding.
  * Requires at least: 6.8
  * Requires PHP:      7.4
- * Version:           0.1.1
+ * Version:           0.1.2
  * Author:            Phil Hoyt
  * Author URI:        https://philhoyt.com
  * License:           GPL-2.0-or-later
@@ -22,7 +22,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SLIDEKIT_VERSION', '0.1.1' );
+define( 'SLIDEKIT_VERSION', '0.1.2' );
 define( 'SLIDEKIT_DIR', plugin_dir_path( __FILE__ ) );
 
 // Update checks only happen in the admin and on cron; skip the front end.

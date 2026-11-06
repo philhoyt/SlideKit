@@ -1,6 +1,6 @@
 {
 	"name": "slidekit",
-	"version": "0.1.1",
+	"version": "0.1.2",
 	"description": "Slider and Slide blocks for the WordPress block editor, built on Embla Carousel.",
 	"author": "Phil Hoyt",
 	"license": "GPL-2.0-or-later",

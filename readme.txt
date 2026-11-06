@@ -3,7 +3,7 @@ Contributors:      philhoyt
 Tags:              slider, carousel, slideshow, block, embla
 Requires at least: 6.8
 Tested up to:      7.1
-Stable tag:        0.1.1
+Stable tag:        0.1.2
 Requires PHP:      7.4
 License:           GPL-2.0-or-later
 License URI:       https://www.gnu.org/licenses/gpl-2.0.html
@@ -63,6 +63,10 @@ The script loads only where a Slider block is present. On block themes the style
 Set `settings.viewport` in theme.json on WordPress 7.1 or later and the slider uses the same mobile and tablet widths as the editor. On older versions the breakpoints are fixed at 480px and 782px.
 
 == Changelog ==
+
+= 0.1.2 =
+* Fixed dashboard updates installing the release's readme.txt instead of the plugin zip (PCLZIP_ERR_BAD_FORMAT). Sites on 0.1.1 or earlier: upload this release's zip once; later updates arrive normally.
+* Rewrote the readme files in plain English.
 
 = 0.1.1 =
 * Fixed update checks failing with a missing class: the update checker's bundled Markdown and readme parsers now ship with the plugin.
